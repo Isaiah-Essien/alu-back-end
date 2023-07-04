@@ -1,29 +1,38 @@
 #!/usr/bin/python3
-"""Module"""
+
+"""Import libraries"""
 
 import requests
 import sys
 
 
-"""Module"""
+"""Import libraries"""
 
-if __name__ == '__main__':
-    employee_id = sys.argv[1]
-    user_url = "https://jsonplaceholder.typicode.com/users/{}" \
-        .format(employee_id)
-    todos_url = "https://jsonplaceholder.typicode.com/users/{}/todos/" \
-        .format(employee_id)
+if __name__ == "__main__":
+    user_id = int(sys.argv[1])
+    todos_url = "https://jsonplaceholder.typicode.com/todos"
+    users_url = "https://jsonplaceholder.typicode.com/users/{}".format(user_id)
 
-    user_info = requests.request('GET', user_url).json()
-    todos_info = requests.request('GET', todos_url).json()
+    todo_data = requests.get(todos_url).json()
 
-    employee_name = user_info["name"]
-    task_completed = list(filter(lambda obj:
-                                 (obj["completed"] is True), todos_info))
-    number_of_done_tasks = len(task_completed)
-    total_number_of_tasks = len(todos_info)
+    employee_name = requests.get(users_url).json()["name"]
 
-    print("Employee {} is done with tasks({}/{}):".
-          format(employee_name, number_of_done_tasks, total_number_of_tasks))
+    total_user_todos = 0
+    completed_todos = 0
+    titles = []
+    for todo in todo_data:
+        # Check if user_id is the same input as parameter
+        if user_id == todo["userId"]:
+            # Get the total number of todos
+            total_user_todos += 1
+            # Get the total number of completed tasks
+            if todo["completed"]:
+                completed_todos += 1
+                # Get the titles of the completed tasks
+                titles.append(todo["title"])
 
-    [print("\t " + task["title"]) for task in task_completed]
+    print("Employee {} is done with tasks({}/{}):"
+          .format(employee_name, completed_todos, total_user_todos))
+
+    for title in titles:
+        print("\t {}".format(title))
