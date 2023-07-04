@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#Issiah-Essien
+# Isaiah-Essien
 """"Module"""
 
 import json
